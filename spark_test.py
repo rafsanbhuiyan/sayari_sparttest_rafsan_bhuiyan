@@ -44,7 +44,7 @@ gbr_df = explode_gz.select("id","comment","value", "name", "nationality", "place
 
 gbr_df.printSchema()
 
-gbr_df.show()
+gbr_df.show(truncate = 50)
 
 #gz_join = gz.join(explode_gz, on = "id", how = "inner")
 
