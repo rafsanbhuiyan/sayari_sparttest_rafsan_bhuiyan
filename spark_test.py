@@ -7,14 +7,15 @@ sc = SparkContext(master="local[*]", appName = "data_json")
 
 spark = SparkSession.builder.appName('data_json').getOrCreate()
 
+#Reading in JSON data
 normal_gbr_df = spark.read.json("/Users/rafsanbhuiyan/Documents/GitHub/sayari_sparttest_rafsan_bhuiyan/gbr.jsonl")
 
 normal_ofac_df = spark.read.json("/Users/rafsanbhuiyan/Documents/GitHub/sayari_sparttest_rafsan_bhuiyan/ofac.jsonl")
 
-
+################ NORMALIZING GBR.JSONL dataset
+#Flatten nested JSON
 gbr = normal_gbr_df.withColumn("country",normal_gbr_df.addresses.country)
 gbr = gbr.withColumn("postal_code",normal_gbr_df.addresses.postal_code)
-#gz = gz.withColumn("reported_DOB", concat_ws(", ", normal_gbr_df.reported_dates_of_birth))
 
 #explode
 explode_gbr = gbr.withColumn("reported_DOB", explode("reported_dates_of_birth"))
@@ -31,12 +32,15 @@ gbr_df.printSchema()
 
 gbr_df.show(truncate = 60)
 
+
+
+
+##############CODE ARCHIVES###################
+#gz = gz.withColumn("reported_DOB", concat_ws(", ", normal_gbr_df.reported_dates_of_birth))
+
 #gz_join = gz.join(explode_gz, on = "id", how = "inner")
 
-
 #gz = normal_gbr_df.drop(normal_gbr_df.reported_dates_of_birth)
-
-
 
 #gbr_df.show()
 
