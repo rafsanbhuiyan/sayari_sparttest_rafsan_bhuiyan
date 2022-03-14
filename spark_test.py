@@ -31,19 +31,27 @@ gz = normal_gbr_df.withColumn("country",normal_gbr_df.addresses.country)
 gz = gz.withColumn("postal_code",normal_gbr_df.addresses.postal_code)
 #gz = gz.withColumn("reported_DOB", concat_ws(", ", normal_gbr_df.reported_dates_of_birth))
 
-explode_gz = gz.explode("reported_dates_of_birth").alias("reported_DOB")
+#explode
+explode_gz = gz.withColumn("reported_DOB", explode("reported_dates_of_birth"))
 
-explode_gz.show()
 
+explode_gz = explode_gz.withColumn("id_number", explode("id_numbers")).withColumn("nationality", explode("nationality"))
+
+explode_gz = explode_gz.withColumn("comment", explode_gz.id_number.comment).withColumn("value",explode_gz.id_number.value).withColumn("country", explode("country")).withColumn("postal_code", explode("postal_code"))
+
+
+gbr_df = explode_gz.select("id","comment","value", "name", "nationality", "place_of_birth", "position", "type", to_date("reported_DOB", 'dd/MM/yyyy').alias("reported_DOB"), "country", "postal_code")
+
+gbr_df.printSchema()
+
+gbr_df.show()
 
 #gz_join = gz.join(explode_gz, on = "id", how = "inner")
-
-#gz.show()
 
 
 #gz = normal_gbr_df.drop(normal_gbr_df.reported_dates_of_birth)
 
-#gbr_df = gh.select("id", "id_number", "name", "nationality", "place_of_birth", "position", "type", "reported_DOB", "country", "postal_code")
+
 
 #gbr_df.show()
 
