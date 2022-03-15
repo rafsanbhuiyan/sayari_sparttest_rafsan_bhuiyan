@@ -1,4 +1,6 @@
 from ast import alias
+from unicodedata import name
+from numpy import inner
 from pyspark.sql import SparkSession
 from pyspark import SparkContext
 from pyspark.sql import functions as sf
@@ -24,14 +26,15 @@ explode_gbr = gbr.withColumn("reported_DOB", explode("reported_dates_of_birth"))
 
 explode_gbr = explode_gbr.withColumn("id_number", explode("id_numbers")).withColumn("nationality", explode("nationality"))
 
-explode_gbr = explode_gbr.withColumn("comment", explode_gbr.id_number.comment).withColumn("value",explode_gbr.id_number.value).withColumn("country", explode("country")).withColumn("postal_code", explode("postal_code"))
+explode_gbr = explode_gbr.withColumn("id_comment", explode_gbr.id_number.comment).withColumn("id_value",explode_gbr.id_number.value).withColumn("country", explode("country")).withColumn("postal_code", explode("postal_code"))
 
+gbr_df = explode_gbr.select("id","id_comment","id_value", "name", "nationality", "place_of_birth", "position", "type",  "country", "postal_code", to_date("reported_DOB", 'dd/MM/yyyy').alias("reported_DOB"))
 
-gbr_df = explode_gbr.select("id","comment","value", "name", "nationality", "place_of_birth", "position", "type", to_date("reported_DOB", 'dd/MM/yyyy').alias("reported_DOB"), "country", "postal_code")
+gbr_df = gbr_df.withColumnRenamed("id", "uk_id")
 
-#gbr_df.printSchema()
+gbr_df.printSchema()
 
-gbr_df.show(truncate = 60)
+gbr_df.show()
 
 ################ NORMALIZING OFAC.JSONL dataset
 #normal_ofac_df.printSchema()
@@ -49,9 +52,18 @@ ofac_df = ofac_df.withColumn("id_comment", explode(ofac_df.id_numbers.comment)).
 ofac_df = ofac_df.drop(ofac_df.id_numbers)
 ofac_df = ofac_df.withColumn("nationality", explode(ofac_df.nationality)). withColumn("reported_DOB", explode(ofac_df.reported_dates_of_birth))
 ofac_df = ofac_df.drop(ofac_df.reported_dates_of_birth)
-ofac_df.show()
+#gbr_df = explode_gbr.select("id","id_comment","id_value", "name", "nationality", "place_of_birth", "position", "type",  "country", "postal_code", to_date("reported_DOB", 'dd/MM/yyyy').alias("reported_DOB"))
+ofac_df = ofac_df.select("id", "id_comment", "id_value", "name", "nationality", "place_of_birth", "position", "type", "aliases", "country", "postal_code", to_date("reported_DOB", 'dd MMM yyyy').alias("reported_DOB"))
+ofac_df = ofac_df.withColumnRenamed("id","ofac_id")
+ofac_df.show(truncate=40)
 ofac_df.printSchema()
 
+#JOINING SPARK DATAFRAMES
+output_data = ofac_df.join(gbr_df, on=["name", "nationality"], how="inner")
+
+output_data = output_data.select(output_data.ofac_id, output_data.uk_id, output_data.name, output_data.id_comment, output_data.id_value, output_data.nationality, output_data.place_of_birth, output_data.position, output_data.type, output_data.type, output_data.country, output_data.postal_code, output_data.reported_DOB)
+
+output_data.show()
 ##############CODE ARCHIVES###################
 #gz = gz.withColumn("reported_DOB", concat_ws(", ", normal_gbr_df.reported_dates_of_birth))
 
