@@ -69,7 +69,7 @@ output_data.show()
 #writing data to csv
 final_output = output_data.toPandas()
 
-final_output.to_csv("/Users/rafsanbhuiyan/Documents/GitHub/sayari_sparttest_rafsan_bhuiyan/final_ouput.csv")
+final_output.to_csv("/Users/rafsanbhuiyan/Documents/GitHub/sayari_sparttest_rafsan_bhuiyan/final_ouput.csv", index= False)
 
 #output_data = output_data.select(output_data.ofac_id, output_data.uk_id, output_data.name, output_data.id_comment, output_data.id_value, output_data.nationality, output_data.place_of_birth, output_data.position, output_data.type, output_data.type, output_data.country, output_data.postal_code, output_data.reported_DOB)
 
