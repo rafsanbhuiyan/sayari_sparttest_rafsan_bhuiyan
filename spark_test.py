@@ -1,3 +1,4 @@
+from ast import alias
 from pyspark.sql import SparkSession
 from pyspark import SparkContext
 from pyspark.sql import functions as sf
@@ -30,13 +31,19 @@ gbr_df = explode_gbr.select("id","comment","value", "name", "nationality", "plac
 
 #gbr_df.printSchema()
 
-#gbr_df.show(truncate = 60)
+gbr_df.show(truncate = 60)
 
 ################ NORMALIZING OFAC.JSONL dataset
 normal_ofac_df.printSchema()
-normal_ofac_df.show(truncate=60)
+#normal_ofac_df.show(truncate=60)
+
+ofac_df = normal_ofac_df.select("id", "id_numbers", "name", "nationality", "place_of_birth", "position", "reported_dates_of_birth","type", "aliases", "addresses")
 
 
+#FLATTEN NESTED JSON
+ofac_df = ofac_df.withColumn("country",explode(ofac_df.addresses.country))
+ofac_df = ofac_df.withColumn("postal_code",explode(ofac_df.addresses.postal_code))
+ofac_df.show()
 
 ##############CODE ARCHIVES###################
 #gz = gz.withColumn("reported_DOB", concat_ws(", ", normal_gbr_df.reported_dates_of_birth))
