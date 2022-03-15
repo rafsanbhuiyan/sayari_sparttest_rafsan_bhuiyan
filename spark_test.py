@@ -71,29 +71,5 @@ final_output = output_data.toPandas()
 
 final_output.to_csv("/Users/rafsanbhuiyan/Documents/GitHub/sayari_sparttest_rafsan_bhuiyan/final_ouput.csv", index= False)
 
-#output_data = output_data.select(output_data.ofac_id, output_data.uk_id, output_data.name, output_data.id_comment, output_data.id_value, output_data.nationality, output_data.place_of_birth, output_data.position, output_data.type, output_data.type, output_data.country, output_data.postal_code, output_data.reported_DOB)
-
-
-##############CODE ARCHIVES###################
-#gz = gz.withColumn("reported_DOB", concat_ws(", ", normal_gbr_df.reported_dates_of_birth))
-
-#gz_join = gz.join(explode_gz, on = "id", how = "inner")
-
-#gz = normal_gbr_df.drop(normal_gbr_df.reported_dates_of_birth)
-
-#gbr_df.show()
-
-#gbr_df.select("reported_DOB").show(truncate=False)
-
-#gbr_df.printSchema()
-
-#gbr_df = gbr_df.select("reported_DOB", date_format("reported_DOB", "MM/dd/yyyy").alias("reported_DOB")).show()
-
-#normal_ofac_df.show()
-
-#normal_ofac_df.printSchema()
-
-#gz.printSchema()
-
 
 
