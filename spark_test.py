@@ -1,6 +1,7 @@
 from ast import alias
 from unicodedata import name
 from numpy import inner
+import pandas as pd
 from pyspark.sql import SparkSession
 from pyspark import SparkContext
 from pyspark.sql import functions as sf
@@ -58,12 +59,21 @@ ofac_df = ofac_df.withColumnRenamed("id","ofac_id")
 ofac_df.show(truncate=40)
 ofac_df.printSchema()
 
-#JOINING SPARK DATAFRAMES
-output_data = ofac_df.join(gbr_df, on=["name", "nationality"], how="inner")
+#JOINING SPARK DATAFRAMES, on Name, Nationality, Place of Birth, Country and type
+output_data = ofac_df.join(gbr_df, on=["name", "nationality", "place_of_birth", "country", "type"], how="inner").withColumn("uk_id", gbr_df.uk_id)
 
-output_data = output_data.select(output_data.ofac_id, output_data.uk_id, output_data.name, output_data.id_comment, output_data.id_value, output_data.nationality, output_data.place_of_birth, output_data.position, output_data.type, output_data.type, output_data.country, output_data.postal_code, output_data.reported_DOB)
+output_data = output_data.select("ofac_id", "uk_id", "*")
 
 output_data.show()
+
+#writing data to csv
+final_output = output_data.toPandas()
+
+final_output.to_csv("/Users/rafsanbhuiyan/Documents/GitHub/sayari_sparttest_rafsan_bhuiyan/final_ouput.csv")
+
+#output_data = output_data.select(output_data.ofac_id, output_data.uk_id, output_data.name, output_data.id_comment, output_data.id_value, output_data.nationality, output_data.place_of_birth, output_data.position, output_data.type, output_data.type, output_data.country, output_data.postal_code, output_data.reported_DOB)
+
+
 ##############CODE ARCHIVES###################
 #gz = gz.withColumn("reported_DOB", concat_ws(", ", normal_gbr_df.reported_dates_of_birth))
 
