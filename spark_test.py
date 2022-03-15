@@ -28,10 +28,13 @@ explode_gbr = explode_gbr.withColumn("comment", explode_gbr.id_number.comment).w
 
 gbr_df = explode_gbr.select("id","comment","value", "name", "nationality", "place_of_birth", "position", "type", to_date("reported_DOB", 'dd/MM/yyyy').alias("reported_DOB"), "country", "postal_code")
 
-gbr_df.printSchema()
+#gbr_df.printSchema()
 
-gbr_df.show(truncate = 60)
+#gbr_df.show(truncate = 60)
 
+################ NORMALIZING OFAC.JSONL dataset
+normal_ofac_df.printSchema()
+normal_ofac_df.show(truncate=60)
 
 
 
